@@ -2283,8 +2283,7 @@ static VkResult timeline_CreateDevice(
     VkDeviceCreateInfo *pNewCreateInfo = NULL;
 
     if (vulkan12_features || timeline_features) {
-        pNewCreateInfo = clone_device_create_info_pnext(pAllocator ? pAllocator : &instance->alloc,
-                                                        pCreateInfo);
+        pNewCreateInfo = clone_device_create_info_pnext(&instance->alloc, pCreateInfo);
 
         if (pNewCreateInfo == NULL)
             return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -2297,8 +2296,7 @@ static VkResult timeline_CreateDevice(
 
     /* Free the cloned CreateInfo */
     if (pNewCreateInfo) {
-        free_device_create_info_pnext(pAllocator ? pAllocator : &instance->alloc,
-                                      pNewCreateInfo);
+        free_device_create_info_pnext(&instance->alloc, pNewCreateInfo);
     }
 
     if (result != VK_SUCCESS)
@@ -2311,7 +2309,7 @@ static VkResult timeline_CreateDevice(
                         fpGetDeviceProcAddr,
                         load_data_info->u.pfnSetDeviceLoaderData,
                         pCreateInfo,
-                        pAllocator ? pAllocator : &instance->alloc,
+                        &instance->alloc,
                         instance);
     if (result != VK_SUCCESS) {
         PFN_vkDestroyDevice fpDestroyDevice = (PFN_vkDestroyDevice)fpGetInstanceProcAddr(NULL, "vkDestroyDevice");
@@ -2381,7 +2379,7 @@ static VkResult timeline_CreateInstance(
 
     result = instance_new(*pInstance,
                           fpGetInstanceProcAddr,
-                          pAllocator ? pAllocator : &default_alloc);
+                          &default_alloc);
     if (result != VK_SUCCESS) {
         PFN_vkDestroyInstance fpDestroyInstance =
             (PFN_vkDestroyInstance)fpGetInstanceProcAddr(NULL, "vkDestroyInstance");
